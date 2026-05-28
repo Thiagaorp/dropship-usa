@@ -6,6 +6,16 @@ export const dynamic = "force-dynamic";
 // One-time seed endpoint — protect with secret token
 // Accepts both GET (browser) and POST (curl/scripts)
 async function handleSeed(req: NextRequest) {
+  // Debug: check which env vars are available
+  const dbUrl = process.env.DATABASE_URL;
+  const pgUrl = process.env.POSTGRES_URL;
+  const pgPrismaUrl = process.env.POSTGRES_PRISMA_URL;
+  const debug = {
+    DATABASE_URL: dbUrl ? dbUrl.substring(0, 40) + "..." : "NOT SET",
+    POSTGRES_URL: pgUrl ? pgUrl.substring(0, 40) + "..." : "NOT SET",
+    POSTGRES_PRISMA_URL: pgPrismaUrl ? pgPrismaUrl.substring(0, 40) + "..." : "NOT SET",
+  };
+
   try {
   const existing = await prisma.product.count();
   if (existing > 0) {
@@ -38,7 +48,7 @@ async function handleSeed(req: NextRequest) {
   return NextResponse.json({ success: true, created: products.length });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
-    return NextResponse.json({ error: "DB_ERROR", detail: msg }, { status: 500 });
+    return NextResponse.json({ error: "DB_ERROR", detail: msg, debug }, { status: 500 });
   }
 }
 
