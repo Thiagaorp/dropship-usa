@@ -3,7 +3,15 @@ import { PrismaNeon } from "@prisma/adapter-neon";
 import { PrismaLibSql } from "@prisma/adapter-libsql";
 
 function createPrisma(): PrismaClient {
-  const url = process.env.DATABASE_URL ?? "";
+  // Support multiple Neon variable naming conventions:
+  // - DATABASE_URL          (manual setup / older Neon integration)
+  // - POSTGRES_URL          (newer Neon/Vercel integration)
+  // - POSTGRES_PRISMA_URL   (Neon Vercel integration with pgbouncer params)
+  const url =
+    process.env.DATABASE_URL ??
+    process.env.POSTGRES_URL ??
+    process.env.POSTGRES_PRISMA_URL ??
+    "";
 
   // Local development: use SQLite via LibSQL
   if (!url || url.startsWith("file:")) {
@@ -12,7 +20,7 @@ function createPrisma(): PrismaClient {
     return new PrismaClient({ adapter } as never);
   }
 
-  // Production: use Neon PostgreSQL (or Turso libsql://)
+  // Turso (libsql://)
   if (url.startsWith("libsql://")) {
     const authToken = process.env.DATABASE_AUTH_TOKEN;
     const adapter = new PrismaLibSql({ url, authToken });
