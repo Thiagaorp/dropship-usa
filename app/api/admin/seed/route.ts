@@ -6,9 +6,7 @@ export const dynamic = "force-dynamic";
 // One-time seed endpoint — protect with secret token
 // Accepts both GET (browser) and POST (curl/scripts)
 async function handleSeed(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const token = searchParams.get("token");
-
+  try {
   const existing = await prisma.product.count();
   if (existing > 0) {
     return NextResponse.json({ message: `Already seeded (${existing} products)` });
@@ -38,6 +36,10 @@ async function handleSeed(req: NextRequest) {
   }
 
   return NextResponse.json({ success: true, created: products.length });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ error: "DB_ERROR", detail: msg }, { status: 500 });
+  }
 }
 
 export async function GET(req: NextRequest) {
