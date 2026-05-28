@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getStripe } from "@/lib/stripe";
 
 export async function POST(req: NextRequest) {
   const { amount, currency = "usd", metadata } = await req.json();
@@ -10,14 +11,13 @@ export async function POST(req: NextRequest) {
   const secretKey = process.env.STRIPE_SECRET_KEY;
   if (!secretKey || secretKey === "sk_test_YOUR_STRIPE_SECRET_KEY") {
     return NextResponse.json(
-      { error: "Stripe not configured. Add STRIPE_SECRET_KEY to .env.local" },
+      { error: "Stripe not configured. Add STRIPE_SECRET_KEY to environment variables." },
       { status: 503 }
     );
   }
 
   try {
-    const { stripe } = await import("@/lib/stripe");
-    const paymentIntent = await stripe.paymentIntents.create({
+    const paymentIntent = await getStripe().paymentIntents.create({
       amount: Math.round(amount * 100),
       currency,
       automatic_payment_methods: { enabled: true },
