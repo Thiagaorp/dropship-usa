@@ -18,7 +18,7 @@ async function searchCJ(keyword: string, pageNum = 1) {
   });
   const tokenData = await tokenRes.json();
   const token = tokenData?.data?.accessToken;
-  if (!token) throw new Error("CJ auth failed");
+  if (!token) throw new Error(`CJ auth failed: ${JSON.stringify(tokenData)}`);
 
   const res = await fetch(
     `${baseUrl}/product/list?pageNum=${pageNum}&pageSize=20&productNameEn=${encodeURIComponent(keyword)}`,
