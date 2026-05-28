@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 // One-time seed endpoint — protect with secret token
-export async function POST(req: NextRequest) {
+// Accepts both GET (browser) and POST (curl/scripts)
+async function handleSeed(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const token = searchParams.get("token");
 
@@ -39,4 +42,12 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({ success: true, created: products.length });
+}
+
+export async function GET(req: NextRequest) {
+  return handleSeed(req);
+}
+
+export async function POST(req: NextRequest) {
+  return handleSeed(req);
 }

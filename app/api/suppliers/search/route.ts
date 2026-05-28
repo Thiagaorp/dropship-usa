@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 // CJ Dropshipping product search
 // Docs: https://developers.cjdropshipping.com/
 async function searchCJ(keyword: string, pageNum = 1) {
