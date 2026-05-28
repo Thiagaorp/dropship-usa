@@ -73,8 +73,9 @@ export async function GET(req: NextRequest) {
         supplier: "cj",
         supplierUrl: `https://cjdropshipping.com/product/${p.pid}`,
       }));
-    } catch {
-      products = getMockProducts(keyword);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      return NextResponse.json({ error: "CJ_AUTH_FAILED", detail: msg, products: getMockProducts(keyword) });
     }
   } else {
     products = getMockProducts(keyword);
