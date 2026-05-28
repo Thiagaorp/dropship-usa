@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getStripe } from "@/lib/stripe";
 
 export const dynamic = "force-dynamic";
 
@@ -13,13 +12,18 @@ export async function POST(req: NextRequest) {
   const secretKey = process.env.STRIPE_SECRET_KEY;
   if (!secretKey || secretKey === "sk_test_YOUR_STRIPE_SECRET_KEY") {
     return NextResponse.json(
-      { error: "Stripe not configured. Add STRIPE_SECRET_KEY to environment variables." },
+      { error: "Stripe not configured. Add STRIPE_SECRET_KEY to Vercel environment variables." },
       { status: 503 }
     );
   }
 
   try {
-    const paymentIntent = await getStripe().paymentIntents.create({
+    // Dynamically require stripe so it is never in Turbopack's module graph
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const Stripe = require("stripe");
+    const stripe = new Stripe(secretKey, { apiVersion: "2026-05-27.dahlia" });
+
+    const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100),
       currency,
       automatic_payment_methods: { enabled: true },
