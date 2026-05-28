@@ -27,12 +27,10 @@ function createPrisma(): PrismaClient {
     return new PrismaClient({ adapter } as never);
   }
 
-  // Neon PostgreSQL (postgres:// or postgresql://)
-  const { neonConfig, Pool } = require("@neondatabase/serverless");
-  const { WebSocket } = require("ws");
-  neonConfig.webSocketConstructor = WebSocket;
-  const pool = new Pool({ connectionString: url });
-  const adapter = new PrismaNeon(pool);
+  // Neon PostgreSQL (postgres:// or postgresql://) — use HTTP mode (no WebSocket)
+  const { neon } = require("@neondatabase/serverless");
+  const sql = neon(url);
+  const adapter = new PrismaNeon(sql);
   return new PrismaClient({ adapter } as never);
 }
 
