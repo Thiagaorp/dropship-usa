@@ -18,7 +18,7 @@ async function searchCJ(keyword: string, pageNum = 1) {
   });
   const tokenData = await tokenRes.json();
   const token = tokenData?.data?.accessToken;
-  if (!token) throw new Error(`CJ auth failed (email="${email}"): ${JSON.stringify(tokenData)}`);
+  if (!token) throw new Error("CJ auth failed");
 
   const res = await fetch(
     `${baseUrl}/product/list?pageNum=${pageNum}&pageSize=20&productNameEn=${encodeURIComponent(keyword)}`,
@@ -73,9 +73,8 @@ export async function GET(req: NextRequest) {
         supplier: "cj",
         supplierUrl: `https://cjdropshipping.com/product/${p.pid}`,
       }));
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      return NextResponse.json({ error: "CJ_AUTH_FAILED", detail: msg, products: getMockProducts(keyword) });
+    } catch {
+      products = getMockProducts(keyword);
     }
   } else {
     products = getMockProducts(keyword);
