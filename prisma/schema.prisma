@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Product {
+  id            String      @id @default(cuid())
+  title         String
+  description   String
+  price         Float
+  comparePrice  Float?
+  images        String
+  category      String
+  tags          String
+  stock         Int         @default(100)
+  sku           String?
+  weight        Float?
+  supplier      String      @default("aliexpress")
+  supplierUrl   String?
+  supplierId    String?
+  active        Boolean     @default(true)
+  featured      Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  orderItems    OrderItem[]
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique
+  status          String      @default("pending")
+  paymentStatus   String      @default("pending")
+  paymentIntentId String?
+  subtotal        Float
+  shipping        Float       @default(0)
+  tax             Float       @default(0)
+  total           Float
+  customerName    String
+  customerEmail   String
+  customerPhone   String?
+  shippingAddress String
+  notes           String?
+  supplierOrdered Boolean     @default(false)
+  trackingNumber  String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  items           OrderItem[]
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Float
+  title     String
+  image     String?
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+}
