@@ -1,12 +1,30 @@
 import { PrismaClient } from "@prisma/client";
+import { PrismaNeon } from "@prisma/adapter-neon";
 import { PrismaLibSql } from "@prisma/adapter-libsql";
 
-function createPrisma() {
-  const url = process.env.DATABASE_URL ?? "file:dev.db";
-  const authToken = process.env.DATABASE_AUTH_TOKEN;
+function createPrisma(): PrismaClient {
+  const url = process.env.DATABASE_URL ?? "";
 
-  // Turso remote DB needs authToken; local file doesn't
-  const adapter = new PrismaLibSql({ url, authToken });
+  // Local development: use SQLite via LibSQL
+  if (!url || url.startsWith("file:")) {
+    const localUrl = url || "file:dev.db";
+    const adapter = new PrismaLibSql({ url: localUrl });
+    return new PrismaClient({ adapter } as never);
+  }
+
+  // Production: use Neon PostgreSQL (or Turso libsql://)
+  if (url.startsWith("libsql://")) {
+    const authToken = process.env.DATABASE_AUTH_TOKEN;
+    const adapter = new PrismaLibSql({ url, authToken });
+    return new PrismaClient({ adapter } as never);
+  }
+
+  // Neon PostgreSQL (postgres:// or postgresql://)
+  const { neonConfig, Pool } = require("@neondatabase/serverless");
+  const { WebSocket } = require("ws");
+  neonConfig.webSocketConstructor = WebSocket;
+  const pool = new Pool({ connectionString: url });
+  const adapter = new PrismaNeon(pool);
   return new PrismaClient({ adapter } as never);
 }
 
