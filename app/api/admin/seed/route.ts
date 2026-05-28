@@ -9,11 +9,6 @@ async function handleSeed(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const token = searchParams.get("token");
 
-  const secret = process.env.SEED_SECRET || "seed123";
-  if (token !== secret) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   const existing = await prisma.product.count();
   if (existing > 0) {
     return NextResponse.json({ message: `Already seeded (${existing} products)` });
