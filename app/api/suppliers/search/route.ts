@@ -7,18 +7,18 @@ export const dynamic = "force-dynamic";
 async function searchCJ(keyword: string, pageNum = 1) {
   const baseUrl = "https://developers.cjdropshipping.com/api2.0/v1";
 
+  const email = (process.env.CJ_EMAIL ?? "").trim();
+  const password = (process.env.CJ_API_KEY ?? "").trim();
+
   // Get access token
   const tokenRes = await fetch(`${baseUrl}/authentication/getAccessToken`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      email: process.env.CJ_EMAIL,
-      password: process.env.CJ_API_KEY,
-    }),
+    body: JSON.stringify({ email, password }),
   });
   const tokenData = await tokenRes.json();
   const token = tokenData?.data?.accessToken;
-  if (!token) throw new Error(`CJ auth failed: ${JSON.stringify(tokenData)}`);
+  if (!token) throw new Error(`CJ auth failed (email="${email}"): ${JSON.stringify(tokenData)}`);
 
   const res = await fetch(
     `${baseUrl}/product/list?pageNum=${pageNum}&pageSize=20&productNameEn=${encodeURIComponent(keyword)}`,
