@@ -1,7 +1,7 @@
+export const dynamic = "force-dynamic";
+
 import { prisma } from "@/lib/db";
 import { parseJSON } from "@/lib/utils";
-
-export const dynamic = "force-dynamic";
 import ProductCard from "@/components/ProductCard";
 import { Product } from "@/types";
 import { SlidersHorizontal } from "lucide-react";
