@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
+
+export const dynamic = "force-dynamic";
 import { parseJSON } from "@/lib/utils";
 import ProductCard from "@/components/ProductCard";
 import { Product } from "@/types";

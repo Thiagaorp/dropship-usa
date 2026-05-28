@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/db";
 import { formatPrice } from "@/lib/utils";
+
+export const dynamic = "force-dynamic";
 import { ShoppingBag, Package, DollarSign, TrendingUp } from "lucide-react";
 
 export default async function AdminDashboard() {
