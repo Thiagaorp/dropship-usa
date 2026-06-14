@@ -21,7 +21,12 @@ export async function POST(req: NextRequest) {
     // Dynamically require stripe so it is never in Turbopack's module graph
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const Stripe = require("stripe");
-    const stripe = new Stripe(secretKey, { apiVersion: "2026-05-27.dahlia" });
+    // Use the Fetch-based HTTP client — the default Node http client throws
+    // StripeConnectionError on Vercel's serverless runtime.
+    const stripe = new Stripe(secretKey, {
+      apiVersion: "2026-05-27.dahlia",
+      httpClient: Stripe.createFetchHttpClient(),
+    });
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100),
