@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { generateOrderNumber } from "@/lib/utils";
+import { evaluateDiscount } from "@/lib/discounts";
 
 export const dynamic = "force-dynamic";
 
@@ -38,10 +39,27 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const {
     items, customerName, customerEmail, customerPhone,
-    shippingAddress, subtotal, shipping, tax, total,
+    shippingAddress, subtotal, shipping, tax, discountCode,
   } = body;
 
   const orderNumber = generateOrderNumber();
+
+  // Re-evaluate any discount server-side so the total can't be tampered with.
+  let discount = 0;
+  let appliedCode: string | null = null;
+  if (discountCode) {
+    const result = await evaluateDiscount(String(discountCode), subtotal);
+    if (result.valid && result.discountAmount) {
+      discount = result.discountAmount;
+      appliedCode = result.code ?? null;
+      await prisma.discountCode.updateMany({
+        where: { code: appliedCode ?? undefined },
+        data: { usedCount: { increment: 1 } },
+      });
+    }
+  }
+
+  const total = Math.max(0, subtotal - discount + shipping + tax);
 
   const order = await prisma.order.create({
     data: {
@@ -53,6 +71,8 @@ export async function POST(req: NextRequest) {
       subtotal,
       shipping,
       tax,
+      discount,
+      discountCode: appliedCode,
       total,
       status: "pending",
       paymentStatus: "paid",

@@ -60,6 +60,8 @@ export interface Order {
   subtotal: number;
   shipping: number;
   tax: number;
+  discount: number;
+  discountCode: string | null;
   total: number;
   customerName: string;
   customerEmail: string;

@@ -50,6 +50,8 @@ model Order {
   subtotal        Float
   shipping        Float       @default(0)
   tax             Float       @default(0)
+  discount        Float       @default(0)
+  discountCode    String?
   total           Float
   customerName    String
   customerEmail   String
@@ -97,4 +99,17 @@ model NewsletterSubscriber {
   id        String   @id @default(cuid())
   email     String   @unique
   createdAt DateTime @default(now())
+}
+
+model DiscountCode {
+  id          String    @id @default(cuid())
+  code        String    @unique
+  type        String    @default("percent") // "percent" | "fixed"
+  value       Float
+  minSubtotal Float     @default(0)
+  active      Boolean   @default(true)
+  maxUses     Int?
+  usedCount   Int       @default(0)
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
 }

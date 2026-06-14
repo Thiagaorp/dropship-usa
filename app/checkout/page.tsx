@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useCartStore } from "@/store/cart";
 import { formatPrice } from "@/lib/utils";
 import { ShippingAddress } from "@/types";
-import { ShieldCheck, Lock, CreditCard } from "lucide-react";
+import { ShieldCheck, Lock, CreditCard, Tag } from "lucide-react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { loadStripe } from "@stripe/stripe-js";
@@ -136,10 +136,48 @@ export default function CheckoutPage() {
   });
   const [email, setEmail] = useState("");
 
+  // Promo / discount code
+  const [promoInput, setPromoInput] = useState("");
+  const [promo, setPromo] = useState<{ code: string; amount: number } | null>(null);
+  const [promoMsg, setPromoMsg] = useState("");
+  const [promoChecking, setPromoChecking] = useState(false);
+
   const sub = subtotal();
   const shipping = sub >= 35 ? 0 : 5.99;
   const tax = sub * 0.08;
-  const total = sub + shipping + tax;
+  const discount = promo?.amount ?? 0;
+  const total = Math.max(0, sub - discount + shipping + tax);
+
+  async function applyPromo() {
+    if (!promoInput.trim()) return;
+    setPromoChecking(true);
+    setPromoMsg("");
+    try {
+      const res = await fetch("/api/discounts/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: promoInput, subtotal: sub }),
+      });
+      const data = await res.json();
+      if (data.valid) {
+        setPromo({ code: data.code, amount: data.discountAmount });
+        setPromoMsg(data.message);
+      } else {
+        setPromo(null);
+        setPromoMsg(data.message ?? "Invalid code.");
+      }
+    } catch {
+      setPromoMsg("Could not check code. Try again.");
+    } finally {
+      setPromoChecking(false);
+    }
+  }
+
+  function removePromo() {
+    setPromo(null);
+    setPromoInput("");
+    setPromoMsg("");
+  }
 
   if (items.length === 0) {
     return (
@@ -176,7 +214,7 @@ export default function CheckoutPage() {
           subtotal: sub,
           shipping,
           tax,
-          total,
+          discountCode: promo?.code ?? null,
         }),
       });
 
@@ -186,12 +224,12 @@ export default function CheckoutPage() {
       setOrderId(orderData.order.id);
       setOrderNumber(orderData.orderNumber);
 
-      // 2. Create Stripe Payment Intent
+      // 2. Create Stripe Payment Intent — use the server-computed total
       const piRes = await fetch("/api/stripe/payment-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: total,
+          amount: orderData.order.total,
           metadata: { orderId: orderData.order.id, orderNumber: orderData.orderNumber },
         }),
       });
@@ -399,10 +437,52 @@ export default function CheckoutPage() {
               ))}
             </div>
 
+            {/* Promo code */}
+            <div className="border-t border-gray-100 pt-4 mb-4">
+              {promo ? (
+                <div className="flex items-center justify-between bg-green-50 rounded-xl px-3 py-2.5">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Tag className="w-4 h-4 text-green-600" />
+                    <span className="font-semibold text-green-700">{promo.code}</span>
+                    <span className="text-green-600">applied</span>
+                  </div>
+                  <button onClick={removePromo} className="text-xs text-gray-500 hover:text-red-600 font-medium">
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="flex gap-2">
+                    <input
+                      value={promoInput}
+                      onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applyPromo(); } }}
+                      placeholder="Promo code"
+                      className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-500 uppercase"
+                    />
+                    <button
+                      onClick={applyPromo}
+                      disabled={promoChecking || !promoInput.trim()}
+                      className="bg-gray-900 text-white text-sm font-semibold px-4 rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50"
+                    >
+                      {promoChecking ? "..." : "Apply"}
+                    </button>
+                  </div>
+                  {promoMsg && <p className="text-xs text-red-500 mt-1.5">{promoMsg}</p>}
+                </>
+              )}
+            </div>
+
             <div className="border-t border-gray-100 pt-4 space-y-2">
               <div className="flex justify-between text-sm text-gray-600">
                 <span>Subtotal</span><span>{formatPrice(sub)}</span>
               </div>
+              {discount > 0 && (
+                <div className="flex justify-between text-sm text-green-600 font-medium">
+                  <span>Discount{promo ? ` (${promo.code})` : ""}</span>
+                  <span>−{formatPrice(discount)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-sm text-gray-600">
                 <span>Shipping</span>
                 <span className={shipping === 0 ? "text-green-600 font-medium" : ""}>
