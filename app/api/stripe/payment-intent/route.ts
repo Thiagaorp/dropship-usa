@@ -31,7 +31,13 @@ export async function POST(req: NextRequest) {
     });
     return NextResponse.json({ clientSecret: paymentIntent.client_secret });
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "Stripe error";
-    return NextResponse.json({ error: msg }, { status: 500 });
+    const e = err as { message?: string; type?: string; code?: string; name?: string; statusCode?: number };
+    return NextResponse.json(
+      {
+        error: e?.message ?? "Stripe error",
+        debug: { type: e?.type, code: e?.code, name: e?.name, statusCode: e?.statusCode },
+      },
+      { status: 500 }
+    );
   }
 }
