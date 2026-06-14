@@ -4,21 +4,31 @@ export const dynamic = "force-dynamic";
 
 // CJ Dropshipping product search
 // Docs: https://developers.cjdropshipping.com/
-async function searchCJ(keyword: string, pageNum = 1) {
-  const baseUrl = "https://developers.cjdropshipping.com/api2.0/v1";
-
+// New auth uses apiKey only (format: CJUserNum@api@xxxx). Legacy email+password
+// is still accepted as a fallback for older credentials.
+async function getCJToken(baseUrl: string): Promise<string> {
+  const apiKey = (process.env.CJ_API_KEY ?? "").trim();
   const email = (process.env.CJ_EMAIL ?? "").trim();
-  const password = (process.env.CJ_API_KEY ?? "").trim();
 
-  // Get access token
+  // Prefer the apiKey-only method (recommended by CJ).
+  const body = apiKey.includes("@api@")
+    ? { apiKey }
+    : { email, password: apiKey };
+
   const tokenRes = await fetch(`${baseUrl}/authentication/getAccessToken`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify(body),
   });
   const tokenData = await tokenRes.json();
   const token = tokenData?.data?.accessToken;
-  if (!token) throw new Error("CJ auth failed");
+  if (!token) throw new Error(`CJ auth failed: ${JSON.stringify(tokenData)}`);
+  return token;
+}
+
+async function searchCJ(keyword: string, pageNum = 1) {
+  const baseUrl = "https://developers.cjdropshipping.com/api2.0/v1";
+  const token = await getCJToken(baseUrl);
 
   const res = await fetch(
     `${baseUrl}/product/list?pageNum=${pageNum}&pageSize=20&productNameEn=${encodeURIComponent(keyword)}`,
@@ -59,6 +69,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "keyword is required" }, { status: 400 });
   }
 
+  const debug = searchParams.get("debug") === "1";
+
   let products;
   if (process.env.CJ_API_KEY && process.env.CJ_API_KEY !== "YOUR_CJ_API_KEY") {
     try {
@@ -73,7 +85,14 @@ export async function GET(req: NextRequest) {
         supplier: "cj",
         supplierUrl: `https://cjdropshipping.com/product/${p.pid}`,
       }));
-    } catch {
+      if (debug && products.length === 0) {
+        return NextResponse.json({ debug: "CJ authenticated but returned 0 products", products: [] });
+      }
+    } catch (err: unknown) {
+      if (debug) {
+        const msg = err instanceof Error ? err.message : String(err);
+        return NextResponse.json({ debug: msg, products: getMockProducts(keyword) });
+      }
       products = getMockProducts(keyword);
     }
   } else {
