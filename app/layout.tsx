@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
+import CookieBanner from "@/components/CookieBanner";
 import { Toaster } from "react-hot-toast";
 
 const geist = Geist({ subsets: ["latin"] });
@@ -27,6 +28,7 @@ export default function RootLayout({
         <CartDrawer />
         <main>{children}</main>
         <Footer />
+        <CookieBanner />
         <Toaster
           position="top-right"
           toastOptions={{
