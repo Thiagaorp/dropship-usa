@@ -3,9 +3,25 @@ export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { parseJSON } from "@/lib/utils";
+import { getReviewStats } from "@/lib/reviews";
 import ProductCard from "@/components/ProductCard";
 import { Product } from "@/types";
 import { ShieldCheck, Truck, RefreshCcw, Headphones, ChevronRight, Zap } from "lucide-react";
+
+type RawProduct = Awaited<ReturnType<typeof prisma.product.findMany>>[number];
+
+async function mapProducts(raw: RawProduct[]): Promise<Product[]> {
+  const stats = await getReviewStats(raw.map((p) => p.id));
+  return raw.map((p) => ({
+    ...p,
+    images: parseJSON<string[]>(p.images, []),
+    tags: parseJSON<string[]>(p.tags, []),
+    createdAt: p.createdAt.toISOString(),
+    updatedAt: p.updatedAt.toISOString(),
+    rating: stats[p.id]?.rating ?? 0,
+    reviewCount: stats[p.id]?.reviewCount ?? 0,
+  }));
+}
 
 async function getFeaturedProducts(): Promise<Product[]> {
   const products = await prisma.product.findMany({
@@ -13,13 +29,7 @@ async function getFeaturedProducts(): Promise<Product[]> {
     take: 8,
     orderBy: { createdAt: "desc" },
   });
-  return products.map((p) => ({
-    ...p,
-    images: parseJSON<string[]>(p.images, []),
-    tags: parseJSON<string[]>(p.tags, []),
-    createdAt: p.createdAt.toISOString(),
-    updatedAt: p.updatedAt.toISOString(),
-  }));
+  return mapProducts(products);
 }
 
 async function getNewProducts(): Promise<Product[]> {
@@ -28,13 +38,7 @@ async function getNewProducts(): Promise<Product[]> {
     take: 8,
     orderBy: { createdAt: "desc" },
   });
-  return products.map((p) => ({
-    ...p,
-    images: parseJSON<string[]>(p.images, []),
-    tags: parseJSON<string[]>(p.tags, []),
-    createdAt: p.createdAt.toISOString(),
-    updatedAt: p.updatedAt.toISOString(),
-  }));
+  return mapProducts(products);
 }
 
 const categories = [

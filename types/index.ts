@@ -17,6 +17,17 @@ export interface Product {
   featured: boolean;
   createdAt: string;
   updatedAt: string;
+  rating?: number;
+  reviewCount?: number;
+}
+
+export interface Review {
+  id: string;
+  productId: string;
+  authorName: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
 }
 
 export interface CartItem {

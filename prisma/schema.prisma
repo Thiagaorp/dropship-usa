@@ -26,6 +26,19 @@ model Product {
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   orderItems    OrderItem[]
+  reviews       Review[]
+}
+
+model Review {
+  id         String   @id @default(cuid())
+  productId  String
+  authorName String
+  rating     Int
+  comment    String
+  createdAt  DateTime @default(now())
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
 }
 
 model Order {

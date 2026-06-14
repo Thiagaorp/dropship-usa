@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { prisma } from "@/lib/db";
 import { parseJSON } from "@/lib/utils";
+import { getReviewStats } from "@/lib/reviews";
 import ProductCard from "@/components/ProductCard";
 import { Product } from "@/types";
 import { SlidersHorizontal } from "lucide-react";
@@ -57,12 +58,16 @@ export default async function ProductsPage({ searchParams }: Props) {
     prisma.product.count({ where }),
   ]);
 
+  const stats = await getReviewStats(rawProducts.map((p) => p.id));
+
   const products: Product[] = rawProducts.map((p) => ({
     ...p,
     images: parseJSON<string[]>(p.images, []),
     tags: parseJSON<string[]>(p.tags, []),
     createdAt: p.createdAt.toISOString(),
     updatedAt: p.updatedAt.toISOString(),
+    rating: stats[p.id]?.rating ?? 0,
+    reviewCount: stats[p.id]?.reviewCount ?? 0,
   }));
 
   const totalPages = Math.ceil(total / ITEMS_PER_PAGE);

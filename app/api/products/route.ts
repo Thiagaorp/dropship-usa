@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { getReviewStats } from "@/lib/reviews";
 
 export const dynamic = "force-dynamic";
 
@@ -32,12 +33,16 @@ export async function GET(req: NextRequest) {
     prisma.product.count({ where }),
   ]);
 
+  const stats = await getReviewStats(rawProducts.map((p) => p.id));
+
   const products = rawProducts.map((p) => ({
     ...p,
     images: JSON.parse(p.images) as string[],
     tags: JSON.parse(p.tags) as string[],
     createdAt: p.createdAt.toISOString(),
     updatedAt: p.updatedAt.toISOString(),
+    rating: stats[p.id]?.rating ?? 0,
+    reviewCount: stats[p.id]?.reviewCount ?? 0,
   }));
 
   return NextResponse.json({ products, total, page, limit });

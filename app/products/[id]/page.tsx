@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import { ShoppingCart, Star, Truck, ShieldCheck, RefreshCcw, ChevronLeft, Plus, Minus } from "lucide-react";
 import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
+import ProductReviews from "@/components/ProductReviews";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -95,12 +96,27 @@ export default function ProductDetailPage() {
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">{product.title}</h1>
 
           <div className="flex items-center gap-2 mb-4">
-            <div className="flex">
-              {[1,2,3,4,5].map((s) => (
-                <Star key={s} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-              ))}
-            </div>
-            <span className="text-sm text-gray-500">4.8 · 247 reviews</span>
+            {product.reviewCount && product.reviewCount > 0 ? (
+              <>
+                <div className="flex">
+                  {[1,2,3,4,5].map((s) => (
+                    <Star
+                      key={s}
+                      className={`w-4 h-4 ${
+                        s <= Math.round(product.rating ?? 0)
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "fill-gray-200 text-gray-200"
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span className="text-sm text-gray-500">
+                  {product.rating?.toFixed(1)} · {product.reviewCount} review{product.reviewCount !== 1 ? "s" : ""}
+                </span>
+              </>
+            ) : (
+              <span className="text-sm text-gray-400">No reviews yet</span>
+            )}
           </div>
 
           <div className="flex items-baseline gap-3 mb-6">
@@ -163,6 +179,9 @@ export default function ProductDetailPage() {
           )}
         </div>
       </div>
+
+      {/* Reviews */}
+      <ProductReviews productId={product.id} />
 
       {/* Related Products */}
       {related.length > 0 && (

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { getReviewStats } from "@/lib/reviews";
 
 export const dynamic = "force-dynamic";
 
@@ -12,19 +13,23 @@ export async function GET(
   const raw = await prisma.product.findUnique({ where: { id } });
   if (!raw) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
+  const rawRelated = await prisma.product.findMany({
+    where: { category: raw.category, active: true, id: { not: id } },
+    take: 4,
+    orderBy: { createdAt: "desc" },
+  });
+
+  const stats = await getReviewStats([id, ...rawRelated.map((p) => p.id)]);
+
   const product = {
     ...raw,
     images: JSON.parse(raw.images) as string[],
     tags: JSON.parse(raw.tags) as string[],
     createdAt: raw.createdAt.toISOString(),
     updatedAt: raw.updatedAt.toISOString(),
+    rating: stats[id]?.rating ?? 0,
+    reviewCount: stats[id]?.reviewCount ?? 0,
   };
-
-  const rawRelated = await prisma.product.findMany({
-    where: { category: raw.category, active: true, id: { not: id } },
-    take: 4,
-    orderBy: { createdAt: "desc" },
-  });
 
   const related = rawRelated.map((p) => ({
     ...p,
@@ -32,6 +37,8 @@ export async function GET(
     tags: JSON.parse(p.tags) as string[],
     createdAt: p.createdAt.toISOString(),
     updatedAt: p.updatedAt.toISOString(),
+    rating: stats[p.id]?.rating ?? 0,
+    reviewCount: stats[p.id]?.reviewCount ?? 0,
   }));
 
   return NextResponse.json({ product, related });
