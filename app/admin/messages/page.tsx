@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Mail, MailOpen } from "lucide-react";
+import { Mail, MailOpen, Trash2 } from "lucide-react";
+import toast from "react-hot-toast";
 
 interface Message {
   id: string;
@@ -25,6 +26,30 @@ export default function AdminMessagesPage() {
     const data = await res.json();
     setMessages(data.messages ?? []);
     setLoading(false);
+  }
+
+  function open(m: Message) {
+    setSelected(m);
+    if (!m.read) {
+      setMessages((ms) => ms.map((x) => (x.id === m.id ? { ...x, read: true } : x)));
+      fetch(`/api/contact/${m.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ read: true }),
+      }).catch(() => {});
+    }
+  }
+
+  async function remove(id: string) {
+    if (!confirm("Delete this message? This cannot be undone.")) return;
+    const res = await fetch(`/api/contact/${id}`, { method: "DELETE" });
+    if (res.ok) {
+      setMessages((ms) => ms.filter((m) => m.id !== id));
+      if (selected?.id === id) setSelected(null);
+      toast.success("Message deleted");
+    } else {
+      toast.error("Could not delete message");
+    }
   }
 
   const unread = messages.filter((m) => !m.read).length;
@@ -53,10 +78,10 @@ export default function AdminMessagesPage() {
         ) : (
           <ul className="divide-y divide-gray-50">
             {messages.map((m) => (
-              <li key={m.id}>
+              <li key={m.id} className="flex items-stretch hover:bg-gray-50 transition-colors">
                 <button
-                  onClick={() => setSelected(m)}
-                  className="w-full text-left px-5 py-4 hover:bg-gray-50 transition-colors flex items-start gap-3"
+                  onClick={() => open(m)}
+                  className="flex-1 min-w-0 text-left px-5 py-4 flex items-start gap-3"
                 >
                   <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${m.read ? "bg-gray-100 text-gray-400" : "bg-blue-50 text-blue-600"}`}>
                     {m.read ? <MailOpen className="w-4 h-4" /> : <Mail className="w-4 h-4" />}
@@ -73,6 +98,13 @@ export default function AdminMessagesPage() {
                     <p className="text-sm text-gray-600 truncate">{m.subject}</p>
                     <p className="text-xs text-gray-400 truncate mt-0.5">{m.message}</p>
                   </div>
+                </button>
+                <button
+                  onClick={() => remove(m.id)}
+                  className="px-4 text-gray-300 hover:text-red-600 transition-colors shrink-0"
+                  aria-label="Delete message"
+                >
+                  <Trash2 className="w-4 h-4" />
                 </button>
               </li>
             ))}
@@ -99,12 +131,20 @@ export default function AdminMessagesPage() {
             <div className="bg-gray-50 rounded-xl p-4 text-sm text-gray-700 whitespace-pre-wrap mb-4">
               {selected.message}
             </div>
-            <a
-              href={`mailto:${selected.email}?subject=Re: ${encodeURIComponent(selected.subject)}`}
-              className="inline-flex items-center gap-2 bg-blue-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-700 transition-colors"
-            >
-              <Mail className="w-4 h-4" /> Reply by Email
-            </a>
+            <div className="flex items-center gap-3">
+              <a
+                href={`mailto:${selected.email}?subject=Re: ${encodeURIComponent(selected.subject)}`}
+                className="inline-flex items-center gap-2 bg-blue-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-700 transition-colors"
+              >
+                <Mail className="w-4 h-4" /> Reply by Email
+              </a>
+              <button
+                onClick={() => remove(selected.id)}
+                className="inline-flex items-center gap-2 border border-gray-200 text-gray-600 text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors"
+              >
+                <Trash2 className="w-4 h-4" /> Delete
+              </button>
+            </div>
           </div>
         </div>
       )}

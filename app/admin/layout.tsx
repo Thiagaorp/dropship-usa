@@ -3,14 +3,16 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard, Package, ShoppingBag, Search, LogOut, ChevronRight, Mail,
+  LayoutDashboard, Package, ShoppingBag, Search, LogOut, ChevronRight, Mail, Star, Users,
 } from "lucide-react";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
+  { href: "/admin/reviews", label: "Reviews", icon: Star },
   { href: "/admin/messages", label: "Messages", icon: Mail },
+  { href: "/admin/subscribers", label: "Subscribers", icon: Users },
   { href: "/admin/suppliers", label: "Import Products", icon: Search },
 ];
 

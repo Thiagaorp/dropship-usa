@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Order } from "@/types";
 import { formatPrice } from "@/lib/utils";
-import { Package, Truck, CheckCircle2, XCircle, Clock } from "lucide-react";
+import { Package, Truck, CheckCircle2, XCircle, Clock, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 
 const STATUS_OPTIONS = ["pending", "processing", "shipped", "delivered", "cancelled"];
@@ -53,6 +53,17 @@ export default function AdminOrdersPage() {
     setTracking("");
     setSelected(null);
     loadOrders();
+  }
+
+  async function removeOrder(id: string) {
+    if (!confirm("Delete this order permanently? This cannot be undone.")) return;
+    const res = await fetch(`/api/orders/${id}`, { method: "DELETE" });
+    if (res.ok) {
+      setOrders((os) => os.filter((o) => o.id !== id));
+      toast.success("Order deleted");
+    } else {
+      toast.error("Could not delete order");
+    }
   }
 
   return (
@@ -107,10 +118,17 @@ export default function AdminOrdersPage() {
                     {new Date(order.createdAt).toLocaleDateString("en-US")}
                   </td>
                   <td className="px-5 py-3">
-                    <button onClick={() => { setSelected(order); setTracking(order.trackingNumber ?? ""); }}
-                      className="text-xs text-blue-600 hover:underline font-medium">
-                      {order.trackingNumber ? "Edit Tracking" : "Add Tracking"}
-                    </button>
+                    <div className="flex items-center gap-3">
+                      <button onClick={() => { setSelected(order); setTracking(order.trackingNumber ?? ""); }}
+                        className="text-xs text-blue-600 hover:underline font-medium">
+                        {order.trackingNumber ? "Edit Tracking" : "Add Tracking"}
+                      </button>
+                      <button onClick={() => removeOrder(order.id)}
+                        className="text-gray-300 hover:text-red-600 transition-colors"
+                        aria-label="Delete order">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               );
