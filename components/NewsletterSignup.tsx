@@ -23,7 +23,11 @@ export default function NewsletterSignup() {
         setStatus("error");
         return;
       }
-      setMessage(data.alreadySubscribed ? "You're already subscribed!" : "Thanks for subscribing!");
+      setMessage(
+        data.alreadySubscribed
+          ? "You're already subscribed! Use code WELCOME10 for 10% off."
+          : "You're in! Use code WELCOME10 at checkout for 10% off your first order."
+      );
       setStatus("done");
       setEmail("");
     } catch {
