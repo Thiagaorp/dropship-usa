@@ -179,6 +179,21 @@ export default function CheckoutPage() {
     setPromoMsg("");
   }
 
+  // Capture the cart for recovery when the shopper enters their email
+  // but hasn't completed the purchase yet. Fire-and-forget.
+  function captureAbandonedCart() {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || items.length === 0) return;
+    fetch("/api/abandoned-cart", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        subtotal: sub,
+        items: items.map((i) => ({ title: i.title, quantity: i.quantity, price: i.price, image: i.image })),
+      }),
+    }).catch(() => {});
+  }
+
   if (items.length === 0) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-20 text-center">
@@ -280,6 +295,7 @@ export default function CheckoutPage() {
                 <input
                   required type="email" value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onBlur={captureAbandonedCart}
                   className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-500 transition-colors"
                   placeholder="your@email.com"
                 />

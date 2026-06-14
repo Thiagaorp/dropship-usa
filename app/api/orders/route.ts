@@ -95,6 +95,14 @@ export async function POST(req: NextRequest) {
     include: { items: true },
   });
 
+  // Mark any abandoned cart for this email as recovered.
+  if (customerEmail) {
+    await prisma.abandonedCart.updateMany({
+      where: { email: String(customerEmail).toLowerCase() },
+      data: { recovered: true },
+    });
+  }
+
   return NextResponse.json({
     order: {
       ...order,

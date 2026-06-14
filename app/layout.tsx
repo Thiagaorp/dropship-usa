@@ -9,11 +9,31 @@ import { Toaster } from "react-hot-toast";
 
 const geist = Geist({ subsets: ["latin"] });
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "https://dropship-usa.vercel.app";
+
 export const metadata: Metadata = {
-  title: "ShopDirectUSA — Best Deals from Top Suppliers",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "ShopDirectUSA — Best Deals from Top Suppliers",
+    template: "%s | ShopDirectUSA",
+  },
   description:
     "Shop thousands of products at unbeatable prices. Fast shipping across the USA. Electronics, Fashion, Home & more.",
   keywords: "dropshipping, online store, usa, cheap products, electronics, fashion",
+  openGraph: {
+    title: "ShopDirectUSA — Best Deals from Top Suppliers",
+    description:
+      "Shop thousands of products at unbeatable prices. Fast shipping across the USA.",
+    url: SITE_URL,
+    siteName: "ShopDirectUSA",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ShopDirectUSA — Best Deals from Top Suppliers",
+    description: "Shop thousands of products at unbeatable prices. Fast shipping across the USA.",
+  },
 };
 
 export default function RootLayout({
