@@ -17,6 +17,33 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // DIAGNOSTIC: raw fetch directly to Stripe API, bypassing the SDK entirely.
+  if (new URL(req.url).searchParams.get("raw") === "1") {
+    try {
+      const params = new URLSearchParams();
+      params.set("amount", String(Math.round(amount * 100)));
+      params.set("currency", currency);
+      params.set("automatic_payment_methods[enabled]", "true");
+      const r = await fetch("https://api.stripe.com/v1/payment_intents", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${secretKey}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: params.toString(),
+      });
+      const text = await r.text();
+      return NextResponse.json({ rawStatus: r.status, rawBody: text.slice(0, 500) });
+    } catch (err: unknown) {
+      const e = err as { message?: string; name?: string; cause?: unknown };
+      return NextResponse.json({
+        rawError: e?.message,
+        rawName: e?.name,
+        rawCause: e?.cause ? String(e.cause) : undefined,
+      });
+    }
+  }
+
   try {
     // Dynamically require stripe so it is never in Turbopack's module graph
     // eslint-disable-next-line @typescript-eslint/no-require-imports
