@@ -17,8 +17,7 @@ export default function ShippingPage() {
 
       <h2>Shipping Rates & Delivery Estimates</h2>
       <ul>
-        <li><strong>Standard Shipping (Free over $35):</strong> 7–15 business days</li>
-        <li><strong>Standard Shipping (under $35):</strong> $4.99 flat rate, 7–15 business days</li>
+        <li><strong>Standard Shipping (FREE on all orders):</strong> 7–15 business days</li>
         <li><strong>Expedited Shipping:</strong> $12.99, 3–7 business days</li>
       </ul>
       <p>

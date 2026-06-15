@@ -143,7 +143,7 @@ export default function CheckoutPage() {
   const [promoChecking, setPromoChecking] = useState(false);
 
   const sub = subtotal();
-  const shipping = sub >= 35 ? 0 : 5.99;
+  const shipping = 0; // Free shipping on all orders
   const tax = sub * 0.08;
   const discount = promo?.amount ?? 0;
   const total = Math.max(0, sub - discount + shipping + tax);

@@ -12,7 +12,7 @@ const faqs = [
   },
   {
     q: "Is shipping really free?",
-    a: "Yes! We offer free standard shipping on all orders over $35. Orders under $35 have a flat $4.99 shipping fee.",
+    a: "Yes! We offer free standard shipping on every order across the United States — no minimum required.",
   },
   {
     q: "What payment methods do you accept?",

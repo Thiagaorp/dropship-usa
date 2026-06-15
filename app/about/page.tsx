@@ -16,7 +16,7 @@ const values = [
   {
     icon: <Truck className="w-6 h-6" />,
     title: "Fast & Free Shipping",
-    desc: "Free standard shipping on orders over $35, delivered quickly to your door across all 50 states.",
+    desc: "Free standard shipping on every order, delivered quickly to your door across all 50 states.",
   },
   {
     icon: <Heart className="w-6 h-6" />,

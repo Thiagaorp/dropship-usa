@@ -159,7 +159,7 @@ export default function ProductDetailPage() {
 
           <div className="border-t border-gray-100 pt-6 space-y-3">
             {[
-              { icon: <Truck className="w-4 h-4" />, text: "Free shipping on orders over $35" },
+              { icon: <Truck className="w-4 h-4" />, text: "Free shipping on all US orders" },
               { icon: <ShieldCheck className="w-4 h-4" />, text: "Secure payment via Stripe" },
               { icon: <RefreshCcw className="w-4 h-4" />, text: "30-day hassle-free returns" },
             ].map((item) => (

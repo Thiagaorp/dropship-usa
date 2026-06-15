@@ -55,7 +55,7 @@ const categories = [
 ];
 
 const perks = [
-  { icon: <Truck className="w-6 h-6" />, title: "Free US Shipping", desc: "On orders over $35" },
+  { icon: <Truck className="w-6 h-6" />, title: "Free US Shipping", desc: "On all orders, always" },
   { icon: <ShieldCheck className="w-6 h-6" />, title: "Secure Payments", desc: "256-bit SSL encryption" },
   { icon: <RefreshCcw className="w-6 h-6" />, title: "30-Day Returns", desc: "Hassle-free returns" },
   { icon: <Headphones className="w-6 h-6" />, title: "24/7 Support", desc: "Always here to help" },
