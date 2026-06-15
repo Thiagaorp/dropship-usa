@@ -16,6 +16,7 @@ export default function Header() {
     { href: "/products?category=Electronics", label: "Electronics" },
     { href: "/products?category=Fashion", label: "Fashion" },
     { href: "/products?category=Home", label: "Home & Garden" },
+    { href: "/products?category=Pet", label: "Pet" },
   ];
 
   return (

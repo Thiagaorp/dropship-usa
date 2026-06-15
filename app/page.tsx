@@ -48,6 +48,7 @@ const categories = [
   { name: "Sports", icon: "🏃", color: "bg-orange-50 border-orange-100" },
   { name: "Beauty", icon: "💄", color: "bg-purple-50 border-purple-100" },
   { name: "Toys", icon: "🧸", color: "bg-yellow-50 border-yellow-100" },
+  { name: "Pet", icon: "🐾", color: "bg-amber-50 border-amber-100" },
 ];
 
 const perks = [
