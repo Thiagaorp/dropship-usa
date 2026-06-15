@@ -49,6 +49,9 @@ const categories = [
   { name: "Beauty", icon: "💄", color: "bg-purple-50 border-purple-100" },
   { name: "Toys", icon: "🧸", color: "bg-yellow-50 border-yellow-100" },
   { name: "Pet", icon: "🐾", color: "bg-amber-50 border-amber-100" },
+  { name: "Wellness", icon: "🧘", color: "bg-teal-50 border-teal-100" },
+  { name: "Car", icon: "🚗", color: "bg-red-50 border-red-100" },
+  { name: "Outdoor", icon: "⛺", color: "bg-lime-50 border-lime-100" },
 ];
 
 const perks = [
