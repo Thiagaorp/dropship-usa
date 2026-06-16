@@ -29,9 +29,11 @@ const US_STATES = [
 // ── Stripe Payment Form ───────────────────────────────────────────────────────
 function StripePaymentForm({
   orderId,
+  amount,
   onBack,
 }: {
   orderId: string;
+  amount: number;
   onBack: () => void;
 }) {
   const stripe = useStripe();
@@ -48,7 +50,7 @@ function StripePaymentForm({
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}/order-confirmation?order=${orderId}`,
+        return_url: `${window.location.origin}/order-confirmation?order=${orderId}&amount=${amount}`,
       },
       redirect: "if_required",
     });
@@ -64,7 +66,7 @@ function StripePaymentForm({
         body: JSON.stringify({ paymentStatus: "paid", status: "processing" }),
       });
       clearCart();
-      router.push(`/order-confirmation?order=${orderId}`);
+      router.push(`/order-confirmation?order=${orderId}&amount=${amount}`);
     }
   }
 
@@ -409,6 +411,7 @@ export default function CheckoutPage() {
               >
                 <StripePaymentForm
                   orderId={orderId!}
+                  amount={total}
                   onBack={() => setStep("shipping")}
                 />
               </Elements>
