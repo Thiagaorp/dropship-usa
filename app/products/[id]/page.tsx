@@ -129,6 +129,12 @@ export default function ProductDetailPage() {
             )}
           </div>
 
+          {product.tags?.includes("us-warehouse") && (
+            <div className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 rounded-xl px-4 py-2.5 mb-6 text-sm font-semibold">
+              🇺🇸 Ships from USA — Fast 2–7 day delivery
+            </div>
+          )}
+
           <p className="text-gray-600 leading-relaxed mb-6">{product.description}</p>
 
           <div className="flex items-center gap-3 mb-6">

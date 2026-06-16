@@ -50,6 +50,11 @@ export default function ProductCard({ product }: Props) {
               Featured
             </span>
           )}
+          {product.tags?.includes("us-warehouse") && (
+            <span className="absolute bottom-2 left-2 bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+              🇺🇸 Fast Shipping
+            </span>
+          )}
         </div>
 
         <div className="p-3">
