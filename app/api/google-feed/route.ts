@@ -41,8 +41,8 @@ export async function GET() {
       <g:link>${SITE}/products/${p.id}</g:link>
       <g:image_link>${esc(img)}</g:image_link>
       <g:availability>in_stock</g:availability>
-      <g:price>${p.price.toFixed(2)} USD</g:price>${
-        p.comparePrice
+      <g:price>${(p.comparePrice && p.comparePrice > p.price ? p.comparePrice : p.price).toFixed(2)} USD</g:price>${
+        p.comparePrice && p.comparePrice > p.price
           ? `\n      <g:sale_price>${p.price.toFixed(2)} USD</g:sale_price>`
           : ""
       }
