@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import CookieBanner from "@/components/CookieBanner";
+import Pixels from "@/components/Pixels";
 import { Toaster } from "react-hot-toast";
 
 const geist = Geist({ subsets: ["latin"] });
@@ -44,6 +45,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geist.className} bg-gray-50 min-h-screen`}>
+        <Pixels />
         <Header />
         <CartDrawer />
         <main>{children}</main>

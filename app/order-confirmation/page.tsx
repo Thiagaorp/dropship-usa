@@ -3,11 +3,26 @@
 import { useSearchParams } from "next/navigation";
 import { CheckCircle2, Package, Truck, Mail } from "lucide-react";
 import Link from "next/link";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
+
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void;
+    ttq?: { track: (event: string, data?: unknown) => void };
+  }
+}
 
 function ConfirmationContent() {
   const searchParams = useSearchParams();
   const orderNumber = searchParams.get("order") ?? "SDU-UNKNOWN";
+  const amount = parseFloat(searchParams.get("amount") ?? "0") || 0;
+
+  // Fire ad-conversion "Purchase" events once, so Meta/TikTok optimize for buyers.
+  useEffect(() => {
+    const payload = { value: amount, currency: "USD" };
+    try { window.fbq?.("track", "Purchase", payload); } catch {}
+    try { window.ttq?.track("CompletePayment", payload); } catch {}
+  }, [amount]);
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-20 text-center">
