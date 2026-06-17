@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { Resend } from "resend";
 
 export const dynamic = "force-dynamic";
 
@@ -30,10 +31,27 @@ export async function POST(req: NextRequest) {
     const pi = event.data.object;
     const orderId = pi.metadata?.orderId;
     if (orderId) {
-      await prisma.order.update({
+      const order = await prisma.order.update({
         where: { id: orderId },
         data: { paymentStatus: "paid", paymentIntentId: pi.id, status: "processing" },
+        include: { items: true },
       });
+
+      const resendKey = process.env.RESEND_API_KEY;
+      if (resendKey) {
+        const resend = new Resend(resendKey);
+        const addr = (() => { try { return JSON.parse(order.shippingAddress); } catch { return {}; } })();
+        const itemsList = order.items
+          .map((i) => `${i.quantity}x ${i.title} — $${i.price.toFixed(2)}`)
+          .join("\n");
+
+        await resend.emails.send({
+          from: "ShopDirectUSA <onboarding@resend.dev>",
+          to: "thiagao.rodriguesss@gmail.com",
+          subject: `💰 Nova venda! ${order.orderNumber} — $${order.total.toFixed(2)}`,
+          text: `Nova venda no ShopDirectUSA!\n\nPedido: ${order.orderNumber}\nValor: $${order.total.toFixed(2)}\nCliente: ${order.customerName} (${order.customerEmail})\n\nProdutos:\n${itemsList}\n\nEndereço:\n${addr.street ?? ""}, ${addr.city ?? ""}, ${addr.state ?? ""} ${addr.zip ?? ""}\n\nVeja no painel: https://www.shopdirectusa.com/admin`,
+        });
+      }
     }
   }
 
