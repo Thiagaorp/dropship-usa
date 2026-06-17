@@ -9,6 +9,7 @@ declare global {
   interface Window {
     fbq?: (...args: unknown[]) => void;
     ttq?: { track: (event: string, data?: unknown) => void };
+    gtag?: (...args: unknown[]) => void;
   }
 }
 
@@ -22,6 +23,14 @@ function ConfirmationContent() {
     const payload = { value: amount, currency: "USD" };
     try { window.fbq?.("track", "Purchase", payload); } catch {}
     try { window.ttq?.track("CompletePayment", payload); } catch {}
+    try {
+      window.gtag?.("event", "conversion", {
+        send_to: `${process.env.NEXT_PUBLIC_GOOGLE_ADS_ID}/purchase`,
+        value: amount,
+        currency: "USD",
+        transaction_id: orderNumber,
+      });
+    } catch {}
   }, [amount]);
 
   return (

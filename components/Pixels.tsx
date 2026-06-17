@@ -8,6 +8,7 @@ import Script from "next/script";
 //   NEXT_PUBLIC_TIKTOK_PIXEL_ID — TikTok Ads
 const META = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 const TIKTOK = process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID;
+const GADS = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
 
 export default function Pixels() {
   return (
@@ -24,6 +25,19 @@ s.parentNode.insertBefore(t,s)}(window, document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
 fbq('init', '${META}');
 fbq('track', 'PageView');`}
+        </Script>
+      )}
+
+      {GADS && (
+        <Script
+          id="google-ads"
+          strategy="afterInteractive"
+          src={`https://www.googletagmanager.com/gtag/js?id=${GADS}`}
+        />
+      )}
+      {GADS && (
+        <Script id="google-ads-init" strategy="afterInteractive">
+          {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GADS}');`}
         </Script>
       )}
 
