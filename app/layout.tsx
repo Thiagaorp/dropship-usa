@@ -15,6 +15,9 @@ const SITE_URL =
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+  verification: {
+    google: "aSp4SJI5SdT-W1TRxUAIske2uDkf1oD-90FabLBz5OQ",
+  },
   title: {
     default: "ShopDirectUSA — Best Deals from Top Suppliers",
     template: "%s | ShopDirectUSA",
