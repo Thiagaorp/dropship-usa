@@ -20,7 +20,7 @@ interface Props {
 
 const ITEMS_PER_PAGE = 16;
 
-const categories = ["Electronics", "Fashion", "Home", "Sports", "Beauty", "Toys", "Pet", "Wellness", "Car", "Outdoor", "Other"];
+const categories = ["Watches", "Electronics", "Fashion", "Home", "Sports", "Beauty", "Toys", "Pet", "Wellness", "Car", "Outdoor", "Spiritual", "Other"];
 const sortOptions = [
   { value: "newest", label: "Newest First" },
   { value: "price_asc", label: "Price: Low to High" },

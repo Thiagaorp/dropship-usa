@@ -52,6 +52,7 @@ const categories = [
   { name: "Wellness", icon: "🧘", color: "bg-teal-50 border-teal-100" },
   { name: "Car", icon: "🚗", color: "bg-red-50 border-red-100" },
   { name: "Outdoor", icon: "⛺", color: "bg-lime-50 border-lime-100" },
+  { name: "Spiritual", icon: "🕊️", color: "bg-indigo-50 border-indigo-100" },
 ];
 
 const perks = [
