@@ -42,6 +42,7 @@ async function getNewProducts(): Promise<Product[]> {
 }
 
 const categories = [
+  { name: "Watches", icon: "⌚", color: "bg-slate-50 border-slate-100" },
   { name: "Electronics", icon: "⚡", color: "bg-blue-50 border-blue-100" },
   { name: "Fashion", icon: "👗", color: "bg-pink-50 border-pink-100" },
   { name: "Home", icon: "🏠", color: "bg-green-50 border-green-100" },
