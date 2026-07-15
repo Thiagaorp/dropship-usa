@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { Order } from "@/types";
 import { formatPrice } from "@/lib/utils";
-import { Package, Truck, CheckCircle2, XCircle, Clock, Trash2 } from "lucide-react";
+import { Package, Truck, CheckCircle2, XCircle, Clock, Trash2, Send, RefreshCw } from "lucide-react";
 import toast from "react-hot-toast";
+
+const CJ_PANEL = "https://cjdropshipping.com/myCJ.html#/order/list";
 
 const STATUS_OPTIONS = ["pending", "processing", "shipped", "delivered", "cancelled"];
 
@@ -22,6 +24,7 @@ export default function AdminOrdersPage() {
   const [filter, setFilter] = useState("all");
   const [selected, setSelected] = useState<Order | null>(null);
   const [tracking, setTracking] = useState("");
+  const [busyCJ, setBusyCJ] = useState<string | null>(null);
 
   useEffect(() => { loadOrders(); }, [filter]);
 
@@ -55,6 +58,48 @@ export default function AdminOrdersPage() {
     loadOrders();
   }
 
+  // Creates the order in CJ as an unpaid draft — payment stays manual in the CJ panel.
+  async function sendToCJ(id: string) {
+    setBusyCJ(id);
+    try {
+      const res = await fetch(`/api/orders/${id}/cj`, { method: "POST" });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("Rascunho criado no CJ — pague no painel do CJ para despachar");
+        loadOrders();
+      } else if (res.status === 422) {
+        const detalhes = [
+          ...(data.needsChoice ?? []).map((n: { title: string; options: number }) => `${n.title}: ${n.options} variações`),
+          ...(data.missing ?? []),
+        ].join(" · ");
+        toast.error(`Precisa de pedido manual — ${detalhes || data.hint}`, { duration: 8000 });
+      } else {
+        toast.error(data.error ?? "Falha ao enviar para o CJ");
+      }
+    } catch {
+      toast.error("Falha ao enviar para o CJ");
+    }
+    setBusyCJ(null);
+  }
+
+  // Pulls status and tracking number back from CJ into the shop.
+  async function syncCJ(id: string) {
+    setBusyCJ(id);
+    try {
+      const res = await fetch(`/api/orders/${id}/cj`);
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(data.trackingNumber ? `Rastreio: ${data.trackingNumber}` : `Status no CJ: ${data.supplierStatus ?? "sem novidade"}`);
+        loadOrders();
+      } else {
+        toast.error(data.error ?? "Falha ao sincronizar");
+      }
+    } catch {
+      toast.error("Falha ao sincronizar");
+    }
+    setBusyCJ(null);
+  }
+
   async function removeOrder(id: string) {
     if (!confirm("Delete this order permanently? This cannot be undone.")) return;
     const res = await fetch(`/api/orders/${id}`, { method: "DELETE" });
@@ -68,7 +113,13 @@ export default function AdminOrdersPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Orders ({orders.length})</h1>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <h1 className="text-2xl font-bold text-gray-900">Orders ({orders.length})</h1>
+        <a href={CJ_PANEL} target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:underline">
+          <Package className="w-4 h-4" /> Abrir painel do CJ para pagar
+        </a>
+      </div>
 
       {/* Filter Tabs */}
       <div className="flex gap-2 flex-wrap">
@@ -84,16 +135,16 @@ export default function AdminOrdersPage() {
         <table className="w-full text-sm">
           <thead className="bg-gray-50">
             <tr>
-              {["Order", "Customer", "Total", "Status", "Date", "Actions"].map((h) => (
+              {["Order", "Customer", "Total", "Status", "Supplier (CJ)", "Date", "Actions"].map((h) => (
                 <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase">{h}</th>
               ))}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
             {loading ? (
-              <tr><td colSpan={6} className="text-center py-10 text-gray-400">Loading...</td></tr>
+              <tr><td colSpan={7} className="text-center py-10 text-gray-400">Loading...</td></tr>
             ) : orders.length === 0 ? (
-              <tr><td colSpan={6} className="text-center py-10 text-gray-400">No orders</td></tr>
+              <tr><td colSpan={7} className="text-center py-10 text-gray-400">No orders</td></tr>
             ) : orders.map((order) => {
               const cfg = statusConfig[order.status] ?? { color: "bg-gray-100 text-gray-600", icon: null };
               return (
@@ -113,6 +164,28 @@ export default function AdminOrdersPage() {
                       className={`px-2.5 py-1 rounded-full text-xs font-semibold capitalize border-0 cursor-pointer ${cfg.color}`}>
                       {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
                     </select>
+                  </td>
+                  <td className="px-5 py-3">
+                    {order.supplierOrderId ? (
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-700 whitespace-nowrap">
+                          {order.supplierStatus === "draft" ? "Rascunho — pagar no CJ" : order.supplierStatus ?? "no CJ"}
+                        </span>
+                        <button onClick={() => syncCJ(order.id)} disabled={busyCJ === order.id}
+                          className="text-gray-400 hover:text-blue-600 transition-colors disabled:opacity-40"
+                          aria-label="Sincronizar com o CJ" title="Buscar status e rastreio no CJ">
+                          <RefreshCw className={`w-3.5 h-3.5 ${busyCJ === order.id ? "animate-spin" : ""}`} />
+                        </button>
+                      </div>
+                    ) : order.paymentStatus === "paid" ? (
+                      <button onClick={() => sendToCJ(order.id)} disabled={busyCJ === order.id}
+                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-colors disabled:opacity-50">
+                        <Send className="w-3 h-3" />
+                        {busyCJ === order.id ? "Enviando..." : "Enviar ao CJ"}
+                      </button>
+                    ) : (
+                      <span className="text-xs text-gray-300">aguardando pgto</span>
+                    )}
                   </td>
                   <td className="px-5 py-3 text-gray-400 text-xs">
                     {new Date(order.createdAt).toLocaleDateString("en-US")}

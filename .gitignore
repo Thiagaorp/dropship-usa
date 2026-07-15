@@ -42,3 +42,10 @@ next-env.d.ts
 
 /app/generated/prisma
 *.db
+
+.vercel
+.env*
+
+# Generated marketing assets (large binaries, regenerable via scripts/)
+/videos
+/pinterest

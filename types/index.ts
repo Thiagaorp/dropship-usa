@@ -69,6 +69,8 @@ export interface Order {
   shippingAddress: ShippingAddress;
   notes: string | null;
   supplierOrdered: boolean;
+  supplierOrderId: string | null;
+  supplierStatus: string | null;
   trackingNumber: string | null;
   createdAt: string;
   updatedAt: string;
