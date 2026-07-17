@@ -13,8 +13,8 @@ const STATEMENTS = [
 
 async function handleMigrate(req: NextRequest) {
   const token = new URL(req.url).searchParams.get("token");
-  const secret = process.env.SEED_SECRET || "seed123";
-  if (token !== secret) {
+  const secrets = [process.env.MIGRATE_SECRET, process.env.SEED_SECRET].filter(Boolean);
+  if (!token || !secrets.includes(token)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
