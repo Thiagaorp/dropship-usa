@@ -88,9 +88,11 @@ export async function createCJOrder(params: {
   const name = [address.firstName, address.lastName].filter(Boolean).join(" ").trim();
   const street = [address.address1, address.address2].filter(Boolean).join(", ");
 
+  const countryCode = (address.country || "US").toUpperCase();
   const body = {
     orderNumber,
-    shippingCountryCode: address.country || "US",
+    shippingCountry: countryCode,
+    shippingCountryCode: countryCode,
     shippingProvince: address.state ?? "",
     shippingCounty: address.state ?? "",
     shippingCity: address.city ?? "",
