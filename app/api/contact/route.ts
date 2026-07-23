@@ -31,6 +31,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
+  // Honeypot: humans never see the `website` field, so any value means a bot.
+  // Return success so the bot doesn't learn it was filtered, but save nothing.
+  if (String(body?.website ?? "").trim()) {
+    return NextResponse.json({ success: true });
+  }
+
   const name = String(body?.name ?? "").trim();
   const email = String(body?.email ?? "").trim();
   const subject = String(body?.subject ?? "").trim();

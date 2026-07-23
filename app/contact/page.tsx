@@ -5,7 +5,8 @@ import Link from "next/link";
 import { Mail, Phone, Clock, MapPin, Send, CheckCircle, ChevronRight } from "lucide-react";
 
 export default function ContactPage() {
-  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+  // `website` is a honeypot: hidden from humans, but bots fill every field.
+  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "", website: "" });
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [error, setError] = useState("");
 
@@ -30,7 +31,7 @@ export default function ContactPage() {
         return;
       }
       setStatus("success");
-      setForm({ name: "", email: "", subject: "", message: "" });
+      setForm({ name: "", email: "", subject: "", message: "", website: "" });
     } catch {
       setError("Network error. Please try again.");
       setStatus("error");
@@ -95,6 +96,12 @@ export default function ContactPage() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm space-y-4">
+            <input
+              type="text" name="website" tabIndex={-1} autoComplete="off"
+              value={form.website} onChange={(e) => update("website", e.target.value)}
+              aria-hidden="true"
+              style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
+            />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Name *</label>
