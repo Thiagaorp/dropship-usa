@@ -177,12 +177,14 @@ export default function AdminOrdersPage() {
                           <RefreshCw className={`w-3.5 h-3.5 ${busyCJ === order.id ? "animate-spin" : ""}`} />
                         </button>
                       </div>
-                    ) : order.paymentStatus === "paid" ? (
+                    ) : order.paymentStatus === "paid" && order.paymentIntentId ? (
                       <button onClick={() => sendToCJ(order.id)} disabled={busyCJ === order.id}
                         className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-colors disabled:opacity-50">
                         <Send className="w-3 h-3" />
                         {busyCJ === order.id ? "Enviando..." : "Enviar ao CJ"}
                       </button>
+                    ) : order.paymentStatus === "paid" ? (
+                      <span className="text-xs text-red-500" title="Marcado pago mas sem pagamento real do Stripe">⚠ sem pgto real</span>
                     ) : (
                       <span className="text-xs text-gray-300">aguardando pgto</span>
                     )}

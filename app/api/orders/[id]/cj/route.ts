@@ -17,6 +17,15 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
     include: { items: { include: { product: true } } },
   });
   if (!order) return NextResponse.json({ error: "Pedido não encontrado" }, { status: 404 });
+  // Only fulfil orders Stripe actually confirmed. paymentStatus alone is not
+  // enough — a real payment always carries a paymentIntentId; its absence means
+  // the order was never paid (e.g. a bot that POSTed the checkout form).
+  if (!order.paymentIntentId || order.paymentStatus !== "paid") {
+    return NextResponse.json(
+      { error: "Pedido sem pagamento confirmado pelo Stripe — não enviar ao CJ" },
+      { status: 402 }
+    );
+  }
   if (order.supplierOrderId) {
     return NextResponse.json(
       { error: "Este pedido já foi enviado ao CJ", supplierOrderId: order.supplierOrderId },

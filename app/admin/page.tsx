@@ -11,6 +11,8 @@ interface Order {
   customerEmail: string;
   total: number;
   status: string;
+  paymentStatus: string;
+  paymentIntentId: string | null;
   createdAt: string;
   items: { id: string }[];
 }
@@ -47,7 +49,11 @@ export default function AdminDashboard() {
 
         const orders: Order[] = ordersData.orders ?? [];
         const pending = orders.filter((o) => o.status === "pending").length;
-        const revenue = orders.reduce((sum, o) => sum + o.total, 0);
+        // Only count revenue Stripe actually confirmed (paid AND a real
+        // paymentIntentId), so bot/unpaid orders don't inflate the number.
+        const revenue = orders
+          .filter((o) => o.paymentStatus === "paid" && o.paymentIntentId)
+          .reduce((sum, o) => sum + o.total, 0);
 
         setStats({
           totalOrders: ordersData.total ?? 0,

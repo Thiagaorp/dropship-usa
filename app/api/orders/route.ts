@@ -75,7 +75,10 @@ export async function POST(req: NextRequest) {
       discountCode: appliedCode,
       total,
       status: "pending",
-      paymentStatus: "paid",
+      // Orders start UNPAID. Only the Stripe webhook (payment_intent.succeeded)
+      // may flip this to "paid" — otherwise a bot that POSTs the checkout form
+      // creates a "paid" order without ever paying, and fulfilment ships for free.
+      paymentStatus: "pending",
       items: {
         create: items.map((item: {
           productId: string;
