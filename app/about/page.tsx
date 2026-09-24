@@ -1,40 +1,45 @@
 import Link from "next/link";
-import { Truck, ShieldCheck, Heart, Globe, Users, Sparkles, ChevronRight } from "lucide-react";
+import { Truck, ShieldCheck, Mail, Globe, Building2, RotateCcw, ChevronRight } from "lucide-react";
+import { BUSINESS_LEGAL_NAME } from "@/lib/business";
 
 export const metadata = {
   title: "About Us — ShopDirectUSA",
   description:
-    "Learn about ShopDirectUSA — our mission to bring top-quality products at unbeatable prices, shipped fast across the United States.",
+    "Learn about ShopDirectUSA — an online store offering everyday products at fair prices with free shipping to all 50 U.S. states.",
 };
 
+// Everything on this page must be verifiable. Google Merchant Center flagged the
+// store for "Misrepresentation" when this page claimed customer counts and
+// ratings the store did not have. Do not add social proof that isn't backed by
+// real data (orders, reviews) — pull it from the database or leave it out.
 const values = [
   {
     icon: <ShieldCheck className="w-6 h-6" />,
-    title: "Quality First",
-    desc: "Every product is carefully selected from trusted, vetted suppliers so you get exactly what you expect.",
+    title: "Accurate Listings",
+    desc: "We choose products from established suppliers and describe them as accurately as we can. If an item arrives damaged or not as described, we make it right.",
   },
   {
     icon: <Truck className="w-6 h-6" />,
-    title: "Fast & Free Shipping",
-    desc: "Free standard shipping on every order, delivered quickly to your door across all 50 states.",
+    title: "Free Shipping",
+    desc: "Free standard shipping on every order to all 50 U.S. states. Estimated delivery is 7–20 business days after processing.",
   },
   {
-    icon: <Heart className="w-6 h-6" />,
-    title: "Customer Obsessed",
-    desc: "Our support team is here for you 7 days a week — your satisfaction is our top priority.",
+    icon: <RotateCcw className="w-6 h-6" />,
+    title: "30-Day Returns",
+    desc: "Not happy with your purchase? Most items can be returned within 30 days of delivery for a refund or exchange.",
   },
   {
-    icon: <Sparkles className="w-6 h-6" />,
-    title: "Unbeatable Value",
-    desc: "By sourcing directly from suppliers, we cut out the middleman and pass the savings on to you.",
+    icon: <Mail className="w-6 h-6" />,
+    title: "Real Support",
+    desc: "Questions about an order? Email us and we'll reply within 24 hours, Monday to Friday.",
   },
 ];
 
-const stats = [
-  { value: "10,000+", label: "Happy Customers" },
-  { value: "500+", label: "Products" },
-  { value: "50", label: "States Served" },
-  { value: "4.8★", label: "Average Rating" },
+const facts = [
+  { value: "1,700+", label: "Products" },
+  { value: "Free", label: "U.S. Shipping" },
+  { value: "30 days", label: "Returns" },
+  { value: "Stripe", label: "Secure Checkout" },
 ];
 
 export default function AboutPage() {
@@ -45,25 +50,24 @@ export default function AboutPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
           <div className="inline-flex items-center gap-2 bg-white/20 rounded-full px-4 py-1.5 text-sm font-medium mb-6">
             <Globe className="w-4 h-4" />
-            Proudly serving the USA
+            Shipping to all 50 U.S. states
           </div>
           <h1 className="text-4xl md:text-5xl font-extrabold mb-6">
-            We make great products<br />
-            <span className="text-yellow-300">affordable for everyone</span>
+            Everyday products<br />
+            <span className="text-yellow-300">at fair prices</span>
           </h1>
           <p className="text-lg text-blue-100 max-w-2xl mx-auto">
-            ShopDirectUSA was founded on a simple idea: top-quality products shouldn&apos;t cost a
-            fortune. We connect you directly with trusted global suppliers, delivering amazing deals
-            straight to your doorstep.
+            ShopDirectUSA is an online store that works with suppliers around the world to offer
+            useful everyday products at fair prices, with free shipping to your door.
           </p>
         </div>
       </section>
 
-      {/* Stats */}
+      {/* Facts */}
       <section className="bg-white border-b border-gray-100">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            {stats.map((s) => (
+            {facts.map((s) => (
               <div key={s.label}>
                 <p className="text-3xl font-extrabold text-blue-600">{s.value}</p>
                 <p className="text-sm text-gray-500 mt-1">{s.label}</p>
@@ -73,26 +77,29 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Our Story */}
+      {/* Who we are */}
       <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <Users className="w-6 h-6 text-blue-600" /> Our Story
+          <Building2 className="w-6 h-6 text-blue-600" /> Who We Are
         </h2>
         <div className="space-y-4 text-gray-600 leading-relaxed">
           <p>
-            ShopDirectUSA started with a frustration we all share — paying too much for everyday
-            products simply because of layers of middlemen and markups. We knew there had to be a
-            better way.
+            ShopDirectUSA is operated by <strong>{BUSINESS_LEGAL_NAME}</strong>. We are a small online
+            retailer, and we work with established suppliers and fulfillment partners around the
+            world to ship orders directly to customers in the United States.
           </p>
           <p>
-            So we built a store that sources products directly from trusted manufacturers and
-            suppliers around the world, cutting out unnecessary costs. The result? The same quality
-            products you love, at prices that actually make sense.
+            Because items ship from our partners&apos; warehouses, most orders arrive within 7–20
+            business days. Some items are stocked in a U.S. warehouse and may arrive sooner — when
+            that&apos;s the case, it&apos;s shown on the product page.
           </p>
           <p>
-            Today, we&apos;re proud to serve thousands of customers across all 50 states, offering
-            everything from electronics and fashion to home essentials and fitness gear — all backed
-            by fast shipping, secure checkout, and friendly support.
+            Every order is paid through Stripe&apos;s secure checkout, comes with a tracking number,
+            and is covered by our{" "}
+            <Link href="/returns" className="text-blue-600 hover:underline">30-day return policy</Link>.
+            If you have a question before or after you buy, our{" "}
+            <Link href="/contact" className="text-blue-600 hover:underline">support team</Link> is
+            one email away.
           </p>
         </div>
       </section>
@@ -100,7 +107,7 @@ export default function AboutPage() {
       {/* Values */}
       <section className="bg-gray-50 border-y border-gray-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-10">Why Shop With Us</h2>
+          <h2 className="text-2xl font-bold text-gray-900 text-center mb-10">What You Can Expect</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {values.map((v) => (
               <div key={v.title} className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
@@ -120,7 +127,7 @@ export default function AboutPage() {
         <div className="bg-gradient-to-r from-indigo-600 to-blue-600 rounded-3xl p-10 text-white text-center">
           <h2 className="text-3xl font-bold mb-3">Ready to start shopping?</h2>
           <p className="text-blue-100 mb-6 max-w-md mx-auto">
-            Join thousands of happy customers and discover amazing deals today.
+            Browse our catalog — free shipping on every order.
           </p>
           <Link
             href="/products"

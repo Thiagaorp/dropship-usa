@@ -90,7 +90,7 @@ export default async function HomePage() {
               <span className="text-yellow-300">Save Big</span>
             </h1>
             <p className="text-lg text-blue-100 mb-8 max-w-lg">
-              Thousands of top-quality products from trusted global suppliers, delivered fast to your door across the USA.
+              Thousands of everyday products at fair prices, with free shipping to your door across the USA.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
               <Link href="/products" className="bg-white text-blue-700 font-bold px-8 py-3.5 rounded-xl hover:bg-blue-50 transition-colors text-center">

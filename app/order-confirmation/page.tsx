@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { CheckCircle2, Package, Truck, Mail } from "lucide-react";
 import Link from "next/link";
 import { Suspense, useEffect } from "react";
+import { SHIPPING, TRANSIT_LABEL } from "@/lib/business";
 
 declare global {
   interface Window {
@@ -51,8 +52,8 @@ function ConfirmationContent() {
         <div className="grid grid-cols-3 gap-4 mb-10">
           {[
             { icon: <Mail className="w-6 h-6" />, title: "Confirmation Email", desc: "Sent to your inbox" },
-            { icon: <Package className="w-6 h-6" />, title: "Processing", desc: "1–2 business days" },
-            { icon: <Truck className="w-6 h-6" />, title: "Shipping", desc: "7–14 business days" },
+            { icon: <Package className="w-6 h-6" />, title: "Processing", desc: `Within ${SHIPPING.handlingMaxDays} business day` },
+            { icon: <Truck className="w-6 h-6" />, title: "Shipping", desc: TRANSIT_LABEL },
           ].map((item) => (
             <div key={item.title} className="bg-blue-50 rounded-2xl p-4 text-center">
               <div className="text-blue-600 flex justify-center mb-2">{item.icon}</div>

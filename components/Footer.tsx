@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Package, Mail, Phone, MapPin } from "lucide-react";
+import { Package, Mail, Truck } from "lucide-react";
 import NewsletterSignup from "@/components/NewsletterSignup";
+import { BUSINESS_LEGAL_NAME, SUPPORT_EMAIL } from "@/lib/business";
 
 export default function Footer() {
   return (
@@ -22,7 +23,7 @@ export default function Footer() {
               ShopDirectUSA
             </Link>
             <p className="text-sm leading-relaxed">
-              Top-quality products shipped from trusted suppliers directly to your door across the USA.
+              Everyday products at fair prices, with free shipping to all 50 U.S. states.
             </p>
           </div>
 
@@ -56,15 +57,11 @@ export default function Footer() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-blue-400 shrink-0" />
-                support@shopdirectusa.com
+                {SUPPORT_EMAIL}
               </li>
               <li className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-blue-400 shrink-0" />
-                1-800-SHOP-USA
-              </li>
-              <li className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-blue-400 shrink-0" />
-                United States
+                <Truck className="w-4 h-4 text-blue-400 shrink-0" />
+                Ships to all 50 U.S. states
               </li>
             </ul>
             <div className="mt-4 flex items-center gap-2">
@@ -74,7 +71,10 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-sm text-gray-500">
-          <p>&copy; {new Date().getFullYear()} ShopDirectUSA. All rights reserved.</p>
+          <p>
+            &copy; {new Date().getFullYear()} ShopDirectUSA — operated by {BUSINESS_LEGAL_NAME}. All
+            rights reserved.
+          </p>
           <p>Secure checkout powered by Stripe 🔒</p>
         </div>
       </div>

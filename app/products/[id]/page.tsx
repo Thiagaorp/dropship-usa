@@ -10,6 +10,7 @@ import { ShoppingCart, Star, Truck, ShieldCheck, RefreshCcw, ChevronLeft, Plus, 
 import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
 import ProductReviews from "@/components/ProductReviews";
+import { cleanDescription } from "@/lib/product-text";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -49,9 +50,6 @@ export default function ProductDetailPage() {
   }
 
   const image = product.images[selectedImage] ?? product.images[0];
-  const discount = product.comparePrice
-    ? Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100)
-    : 0;
 
   function handleAddToCart() {
     if (!product) return;
@@ -119,23 +117,22 @@ export default function ProductDetailPage() {
             )}
           </div>
 
+          {/* Only the real price — see components/ProductCard.tsx for why there
+              is no strike-through comparePrice here. */}
           <div className="flex items-baseline gap-3 mb-6">
             <span className="text-3xl font-extrabold text-gray-900">{formatPrice(product.price)}</span>
-            {product.comparePrice && (
-              <>
-                <span className="text-xl text-gray-400 line-through">{formatPrice(product.comparePrice)}</span>
-                <span className="bg-red-100 text-red-600 text-sm font-bold px-2 py-0.5 rounded-full">-{discount}% OFF</span>
-              </>
-            )}
           </div>
 
+          {/* No day count: the Merchant Center shipping settings promise
+              7–20 business days for every item, and the page must not
+              promise faster than that. */}
           {product.tags?.includes("us-warehouse") && (
             <div className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 rounded-xl px-4 py-2.5 mb-6 text-sm font-semibold">
-              🇺🇸 Ships from USA — Fast 2–7 day delivery
+              🇺🇸 Ships from a U.S. warehouse
             </div>
           )}
 
-          <p className="text-gray-600 leading-relaxed mb-6">{product.description}</p>
+          <p className="text-gray-600 leading-relaxed mb-6">{cleanDescription(product.description, product.title)}</p>
 
           <div className="flex items-center gap-3 mb-6">
             <p className="text-sm font-medium text-gray-700">Quantity:</p>
@@ -167,7 +164,7 @@ export default function ProductDetailPage() {
             {[
               { icon: <Truck className="w-4 h-4" />, text: "Free shipping on all US orders" },
               { icon: <ShieldCheck className="w-4 h-4" />, text: "Secure payment via Stripe" },
-              { icon: <RefreshCcw className="w-4 h-4" />, text: "30-day hassle-free returns" },
+              { icon: <RefreshCcw className="w-4 h-4" />, text: "30-day returns" },
             ].map((item) => (
               <div key={item.text} className="flex items-center gap-2 text-sm text-gray-600">
                 <span className="text-blue-500">{item.icon}</span>

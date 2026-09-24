@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Mail, Phone, Clock, MapPin, Send, CheckCircle, ChevronRight } from "lucide-react";
+import { Mail, Clock, Building2, Truck, Send, CheckCircle, ChevronRight } from "lucide-react";
+import { BUSINESS_LEGAL_NAME, SUPPORT_EMAIL } from "@/lib/business";
 
 export default function ContactPage() {
   // `website` is a honeypot: hidden from humans, but bots fill every field.
@@ -38,11 +39,13 @@ export default function ContactPage() {
     }
   }
 
+  // No phone number: the store has no phone line, and listing one it doesn't
+  // own was part of the Merchant Center "Misrepresentation" block (2026-09-24).
   const contactInfo = [
-    { icon: <Mail className="w-5 h-5" />, label: "Email", value: "support@shopdirectusa.com" },
-    { icon: <Phone className="w-5 h-5" />, label: "Phone", value: "1-800-SHOP-USA" },
+    { icon: <Mail className="w-5 h-5" />, label: "Email", value: SUPPORT_EMAIL },
     { icon: <Clock className="w-5 h-5" />, label: "Hours", value: "Mon–Fri, 9am–6pm EST" },
-    { icon: <MapPin className="w-5 h-5" />, label: "Location", value: "United States" },
+    { icon: <Building2 className="w-5 h-5" />, label: "Operated by", value: BUSINESS_LEGAL_NAME },
+    { icon: <Truck className="w-5 h-5" />, label: "Ships to", value: "All 50 U.S. states" },
   ];
 
   return (

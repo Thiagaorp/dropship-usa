@@ -1,4 +1,5 @@
 import LegalPage from "@/components/LegalPage";
+import { SHIPPING, TRANSIT_LABEL } from "@/lib/business";
 
 export const metadata = {
   title: "FAQ — ShopDirectUSA",
@@ -8,7 +9,7 @@ export const metadata = {
 const faqs = [
   {
     q: "How long does shipping take?",
-    a: "Most orders are processed within 1–2 business days and delivered within 7–15 business days across the United States. You'll receive a tracking number by email once your order ships.",
+    a: `Orders are processed within ${SHIPPING.handlingMaxDays} business day and delivered within ${TRANSIT_LABEL} across the United States. You'll receive a tracking number by email once your order ships.`,
   },
   {
     q: "Is shipping really free?",

@@ -31,12 +31,12 @@ export const metadata: Metadata = {
     template: "%s | ShopDirectUSA",
   },
   description:
-    "Shop thousands of products at unbeatable prices. Fast shipping across the USA. Electronics, Fashion, Home & more.",
+    "Shop thousands of products at unbeatable prices. Free shipping across the USA. Electronics, Fashion, Home & more.",
   keywords: "dropshipping, online store, usa, cheap products, electronics, fashion",
   openGraph: {
     title: "ShopDirectUSA — Best Deals from Top Suppliers",
     description:
-      "Shop thousands of products at unbeatable prices. Fast shipping across the USA.",
+      "Shop thousands of products at unbeatable prices. Free shipping across the USA.",
     url: SITE_URL,
     siteName: "ShopDirectUSA",
     type: "website",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "ShopDirectUSA — Best Deals from Top Suppliers",
-    description: "Shop thousands of products at unbeatable prices. Fast shipping across the USA.",
+    description: "Shop thousands of products at unbeatable prices. Free shipping across the USA.",
   },
 };
 
