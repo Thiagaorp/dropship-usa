@@ -1,8 +1,9 @@
-export const dynamic = "force-dynamic";
+// Esta rota depende de searchParams, entao a PAGINA continua dinamica.
+// O que passa a ser cacheado sao as CONSULTAS (lib/cached.ts) — e e isso
+// que tira a carga do banco.
 
-import { prisma } from "@/lib/db";
 import { parseJSON } from "@/lib/utils";
-import { getReviewStats } from "@/lib/reviews";
+import { buscarListagem, buscarEstatisticasAvaliacao } from "@/lib/cached";
 import ProductCard from "@/components/ProductCard";
 import { Product } from "@/types";
 import { SlidersHorizontal } from "lucide-react";
@@ -53,12 +54,20 @@ export default async function ProductsPage({ searchParams }: Props) {
       ? { price: "desc" }
       : { createdAt: "desc" };
 
-  const [rawProducts, total] = await Promise.all([
-    prisma.product.findMany({ where, orderBy, take: ITEMS_PER_PAGE, skip }),
-    prisma.product.count({ where }),
-  ]);
+  let rawProducts: Awaited<ReturnType<typeof buscarListagem>>["produtos"] = [];
+  let total = 0;
+  try {
+    const r = await buscarListagem(where, orderBy, ITEMS_PER_PAGE, skip);
+    rawProducts = r.produtos;
+    total = r.total;
+  } catch (e) {
+    // Banco fora: lista vazia em vez de 500.
+    console.error("[products] listagem indisponivel:", e);
+  }
 
-  const stats = await getReviewStats(rawProducts.map((p) => p.id));
+  const stats = await buscarEstatisticasAvaliacao(rawProducts.map((p) => p.id)).catch(
+    () => ({} as Record<string, { rating: number; reviewCount: number }>)
+  );
 
   const products: Product[] = rawProducts.map((p) => ({
     ...p,

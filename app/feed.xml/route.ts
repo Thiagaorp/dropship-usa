@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { cleanDescription } from "@/lib/product-text";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
@@ -22,20 +23,18 @@ export async function GET() {
       })();
       const image = images[0] ?? "";
       const price = p.price.toFixed(2);
-      const comparePrice = p.comparePrice ? p.comparePrice.toFixed(2) : null;
       const productUrl = `${SITE_URL}/products/${p.id}`;
 
       return `
     <item>
       <g:id>${p.id}</g:id>
       <g:title><![CDATA[${p.title}]]></g:title>
-      <g:description><![CDATA[${p.description.slice(0, 5000)}]]></g:description>
+      <g:description><![CDATA[${cleanDescription(p.description, p.title).slice(0, 5000)}]]></g:description>
       <g:link>${productUrl}</g:link>
       <g:image_link>${image}</g:image_link>
       <g:condition>new</g:condition>
       <g:availability>${p.stock > 0 ? "in stock" : "out of stock"}</g:availability>
       <g:price>${price} USD</g:price>
-      ${comparePrice ? `<g:sale_price>${price} USD</g:sale_price>` : ""}
       <g:brand>ShopDirectUSA</g:brand>
       <g:google_product_category>${mapCategory(p.category)}</g:google_product_category>
       <g:shipping>

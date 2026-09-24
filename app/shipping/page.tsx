@@ -1,25 +1,34 @@
 import LegalPage from "@/components/LegalPage";
+import { SHIPPING, TRANSIT_LABEL } from "@/lib/business";
 
 export const metadata = {
   title: "Shipping Policy — ShopDirectUSA",
   description: "Delivery times, shipping costs, and tracking information.",
 };
 
+// Delivery promises come from lib/business.ts, which mirrors the Merchant Center
+// shipping settings. Keep them in sync — a mismatch is a policy violation.
 export default function ShippingPage() {
   return (
-    <LegalPage title="Shipping Policy" updated="June 2026">
+    <LegalPage title="Shipping Policy" updated="September 2026">
       <h2>Processing Time</h2>
       <p>
-        All orders are processed within <strong>1–2 business days</strong> (excluding weekends and
-        holidays) after you receive your order confirmation email. You will receive another
-        notification once your order has shipped.
+        Orders are processed within <strong>{SHIPPING.handlingMaxDays} business day</strong>{" "}
+        (excluding weekends and holidays) after you receive your order confirmation email. You will
+        receive another notification once your order has shipped.
       </p>
 
       <h2>Shipping Rates & Delivery Estimates</h2>
       <ul>
-        <li><strong>Standard Shipping (FREE on all orders):</strong> 7–15 business days</li>
-        <li><strong>Expedited Shipping:</strong> $12.99, 3–7 business days</li>
+        <li>
+          <strong>Standard Shipping — FREE on all orders:</strong> {TRANSIT_LABEL} after processing
+        </li>
       </ul>
+      <p>
+        Standard shipping is the only shipping method we offer. Items ship from our fulfillment
+        partners&apos; warehouses; some items are stocked in a U.S. warehouse and may arrive sooner
+        than the estimate above.
+      </p>
       <p>
         Delivery delays can occasionally occur during peak seasons or due to carrier issues. We
         appreciate your patience.

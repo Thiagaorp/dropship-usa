@@ -1,4 +1,5 @@
 import LegalPage from "@/components/LegalPage";
+import { BUSINESS_LEGAL_NAME } from "@/lib/business";
 
 export const metadata = {
   title: "Terms of Service — ShopDirectUSA",
@@ -7,10 +8,11 @@ export const metadata = {
 
 export default function TermsPage() {
   return (
-    <LegalPage title="Terms of Service" updated="June 2026">
+    <LegalPage title="Terms of Service" updated="September 2026">
       <p>
-        Welcome to ShopDirectUSA. By accessing or using our website and placing an order, you agree
-        to be bound by these Terms of Service. Please read them carefully.
+        Welcome to ShopDirectUSA, an online store operated by {BUSINESS_LEGAL_NAME} (&quot;we&quot;,
+        &quot;us&quot;, or &quot;our&quot;). By accessing or using our website and placing an order, you
+        agree to be bound by these Terms of Service. Please read them carefully.
       </p>
 
       <h2>Use of Our Website</h2>

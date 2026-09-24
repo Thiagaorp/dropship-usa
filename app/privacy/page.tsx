@@ -1,4 +1,5 @@
 import LegalPage from "@/components/LegalPage";
+import { BUSINESS_LEGAL_NAME } from "@/lib/business";
 
 export const metadata = {
   title: "Privacy Policy — ShopDirectUSA",
@@ -7,9 +8,10 @@ export const metadata = {
 
 export default function PrivacyPage() {
   return (
-    <LegalPage title="Privacy Policy" updated="June 2026">
+    <LegalPage title="Privacy Policy" updated="September 2026">
       <p>
-        ShopDirectUSA (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;) respects your privacy. This Privacy Policy
+        ShopDirectUSA, operated by {BUSINESS_LEGAL_NAME} (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;),
+        respects your privacy. This Privacy Policy
         explains how we collect, use, and protect your personal information when you visit or make a
         purchase from our website.
       </p>

@@ -15,9 +15,9 @@ interface Props {
 export default function ProductCard({ product }: Props) {
   const { addItem } = useCartStore();
   const image = product.images[0] ?? "/placeholder.jpg";
-  const discount = product.comparePrice
-    ? Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100)
-    : 0;
+  // No strike-through "was" price or "-X%" badge: comparePrice was never a
+  // price the store actually charged, and showing it got the store flagged
+  // for Misrepresentation in Merchant Center (2026-09-24).
 
   function handleAddToCart(e: React.MouseEvent) {
     e.preventDefault();
@@ -40,11 +40,6 @@ export default function ProductCard({ product }: Props) {
             alt={product.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
-          {discount > 0 && (
-            <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-              -{discount}%
-            </span>
-          )}
           {product.featured && (
             <span className="absolute top-2 right-2 bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
               Featured
@@ -52,7 +47,7 @@ export default function ProductCard({ product }: Props) {
           )}
           {product.tags?.includes("us-warehouse") && (
             <span className="absolute bottom-2 left-2 bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-              🇺🇸 Fast Shipping
+              🇺🇸 U.S. Warehouse
             </span>
           )}
         </div>
@@ -92,11 +87,6 @@ export default function ProductCard({ product }: Props) {
               <span className="text-base font-bold text-gray-900">
                 {formatPrice(product.price)}
               </span>
-              {product.comparePrice && (
-                <span className="text-xs text-gray-400 line-through ml-2">
-                  {formatPrice(product.comparePrice)}
-                </span>
-              )}
             </div>
             <button
               onClick={handleAddToCart}

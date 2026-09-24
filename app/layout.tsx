@@ -10,8 +10,13 @@ import { Toaster } from "react-hot-toast";
 
 const geist = Geist({ subsets: ["latin"] });
 
+// `??` so cai no default quando o valor e undefined/null — string VAZIA passa
+// direto e faz `new URL("")` explodir no build ("Invalid URL"). O
+// .env.production tem NEXT_PUBLIC_SITE_URL vazio, entao o teste precisa ser de
+// valor "falsy", nao de nulidade.
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "https://dropship-usa.vercel.app";
+  process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, "") ||
+  "https://dropship-usa.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -26,12 +31,12 @@ export const metadata: Metadata = {
     template: "%s | ShopDirectUSA",
   },
   description:
-    "Shop thousands of products at unbeatable prices. Fast shipping across the USA. Electronics, Fashion, Home & more.",
+    "Shop thousands of products at unbeatable prices. Free shipping across the USA. Electronics, Fashion, Home & more.",
   keywords: "dropshipping, online store, usa, cheap products, electronics, fashion",
   openGraph: {
     title: "ShopDirectUSA — Best Deals from Top Suppliers",
     description:
-      "Shop thousands of products at unbeatable prices. Fast shipping across the USA.",
+      "Shop thousands of products at unbeatable prices. Free shipping across the USA.",
     url: SITE_URL,
     siteName: "ShopDirectUSA",
     type: "website",
@@ -39,7 +44,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "ShopDirectUSA — Best Deals from Top Suppliers",
-    description: "Shop thousands of products at unbeatable prices. Fast shipping across the USA.",
+    description: "Shop thousands of products at unbeatable prices. Free shipping across the USA.",
   },
 };
 

@@ -12,14 +12,13 @@ export async function POST(req: NextRequest) {
   } = body;
 
   const price = suggestedPrice ?? Math.round(supplierPrice * markup * 100) / 100;
-  const comparePrice = Math.round(price * 1.3 * 100) / 100;
 
   const product = await prisma.product.create({
     data: {
       title,
-      description: `High-quality ${title}. Sourced from verified suppliers. Fast shipping to USA.`,
+      // Plain title only — see lib/product-text.ts for why the old boilerplate was removed.
+      description: title,
       price,
-      comparePrice,
       images: JSON.stringify([image]),
       category: category ?? "Other",
       tags: JSON.stringify([category, supplier].filter(Boolean)),
