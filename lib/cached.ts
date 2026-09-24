@@ -16,6 +16,13 @@
  * conservador. Quando um produto é criado/editado no admin, chame
  * `invalidarCatalogo()` para furar o cache na hora em vez de esperar o TTL.
  */
+/*
+ * ⚠️ unstable_cache stores results as JSON: on a cache HIT, Date fields come back
+ * as ISO strings even though the type says Date. Always wrap them in
+ * `new Date(...)` before calling Date methods. Calling `.toISOString()` directly
+ * made the home and /products return 500 on every cached request (found
+ * 2026-09-24).
+ */
 import { unstable_cache, updateTag } from "next/cache";
 import { prisma } from "@/lib/db";
 
