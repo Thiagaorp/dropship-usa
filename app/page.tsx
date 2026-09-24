@@ -1,9 +1,11 @@
-export const dynamic = "force-dynamic";
+// ISR: a home passa a ser gerada 1x por hora em vez de a cada visita.
+// Era "force-dynamic" e foi o que estourou a cota de compute do Neon.
+export const revalidate = 3600;
 
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { parseJSON } from "@/lib/utils";
-import { getReviewStats } from "@/lib/reviews";
+import { buscarDestaques, buscarNovidades, buscarEstatisticasAvaliacao } from "@/lib/cached";
 import ProductCard from "@/components/ProductCard";
 import { Product } from "@/types";
 import { ShieldCheck, Truck, RefreshCcw, Headphones, ChevronRight, Zap } from "lucide-react";
@@ -11,7 +13,7 @@ import { ShieldCheck, Truck, RefreshCcw, Headphones, ChevronRight, Zap } from "l
 type RawProduct = Awaited<ReturnType<typeof prisma.product.findMany>>[number];
 
 async function mapProducts(raw: RawProduct[]): Promise<Product[]> {
-  const stats = await getReviewStats(raw.map((p) => p.id));
+  const stats = await buscarEstatisticasAvaliacao(raw.map((p) => p.id));
   return raw.map((p) => ({
     ...p,
     images: parseJSON<string[]>(p.images, []),
@@ -24,21 +26,25 @@ async function mapProducts(raw: RawProduct[]): Promise<Product[]> {
 }
 
 async function getFeaturedProducts(): Promise<Product[]> {
-  const products = await prisma.product.findMany({
-    where: { active: true, featured: true },
-    take: 8,
-    orderBy: { createdAt: "desc" },
-  });
-  return mapProducts(products);
+  // Se o banco estiver fora (cota do Neon, manutencao), a loja mostra secao
+  // vazia em vez de devolver 500. O try/catch fica AQUI e nao dentro do
+  // unstable_cache de proposito: assim a falha nao vira uma entrada de cache
+  // vazia valida por 1 hora — a proxima requisicao tenta o banco de novo.
+  try {
+    return mapProducts(await buscarDestaques());
+  } catch (e) {
+    console.error("[home] destaques indisponiveis:", e);
+    return [];
+  }
 }
 
 async function getNewProducts(): Promise<Product[]> {
-  const products = await prisma.product.findMany({
-    where: { active: true },
-    take: 8,
-    orderBy: { createdAt: "desc" },
-  });
-  return mapProducts(products);
+  try {
+    return mapProducts(await buscarNovidades());
+  } catch (e) {
+    console.error("[home] novidades indisponiveis:", e);
+    return [];
+  }
 }
 
 const categories = [

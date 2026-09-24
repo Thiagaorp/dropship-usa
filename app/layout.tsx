@@ -10,8 +10,13 @@ import { Toaster } from "react-hot-toast";
 
 const geist = Geist({ subsets: ["latin"] });
 
+// `??` so cai no default quando o valor e undefined/null — string VAZIA passa
+// direto e faz `new URL("")` explodir no build ("Invalid URL"). O
+// .env.production tem NEXT_PUBLIC_SITE_URL vazio, entao o teste precisa ser de
+// valor "falsy", nao de nulidade.
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "https://dropship-usa.vercel.app";
+  process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, "") ||
+  "https://dropship-usa.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
