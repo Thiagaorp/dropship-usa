@@ -73,8 +73,9 @@ export default async function ProductsPage({ searchParams }: Props) {
     ...p,
     images: parseJSON<string[]>(p.images, []),
     tags: parseJSON<string[]>(p.tags, []),
-    createdAt: p.createdAt.toISOString(),
-    updatedAt: p.updatedAt.toISOString(),
+    // new Date(): on a cache hit unstable_cache returns dates as ISO strings
+    createdAt: new Date(p.createdAt).toISOString(),
+    updatedAt: new Date(p.updatedAt).toISOString(),
     rating: stats[p.id]?.rating ?? 0,
     reviewCount: stats[p.id]?.reviewCount ?? 0,
   }));
